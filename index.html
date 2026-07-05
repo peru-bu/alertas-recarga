@@ -701,7 +701,7 @@
 
       <div class="mt-20">
         <label for="codigoInput">Código de acceso</label>
-        <input id="codigoInput" type="password" placeholder="Ingrese su código de acceso" onkeydown="enterLogin(event)">
+        <input id="codigoInput" type="password" placeholder="Ingrese su código de acceso" style="text-transform:uppercase" autocapitalize="characters" autocomplete="off" onkeydown="enterLogin(event)" oninput="this.value = this.value.toUpperCase()">
       </div>
 
       <div class="mt-16 actions">
@@ -910,7 +910,7 @@
   }
 
   function login() {
-    const codigo = document.getElementById('codigoInput').value.trim();
+    const codigo = document.getElementById('codigoInput').value.trim().toUpperCase();
     if (!codigo) {
       showMessage('loginMsg', 'error', 'Ingrese un código de acceso.');
       return;
