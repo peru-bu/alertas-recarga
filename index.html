@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ALERTA RECARGAS</title>
+  <link rel="icon" type="image/png" href="logo.png">
 
   <style>
     :root {
@@ -63,6 +64,31 @@
       color: var(--gold-soft);
       text-transform: uppercase;
       margin-bottom: 4px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-logo {
+      width: 56px;
+      height: 56px;
+      object-fit: contain;
+      flex-shrink: 0;
+      filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.45));
+    }
+
+    .login-card .brand-logo {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 14px;
+      display: block;
+    }
+
+    .login-card .brand-text {
+      text-align: center;
     }
 
     .header {
@@ -462,6 +488,16 @@
         border-radius: 16px;
       }
 
+      .brand-logo {
+        width: 42px;
+        height: 42px;
+      }
+
+      .login-card .brand-logo {
+        width: 56px;
+        height: 56px;
+      }
+
       .title {
         font-size: 20px;
       }
@@ -571,9 +607,12 @@
 <body>
   <div class="container">
     <div id="loginView" class="card login-card">
-      <div class="kicker">Control operativo</div>
-      <div class="title">ALERTA RECARGAS</div>
-      <div class="subtitle">Control operativo de inicio y fin de recargas</div>
+      <img class="brand-logo" src="logo.png" alt="Logo">
+      <div class="brand-text">
+        <div class="kicker">Control operativo</div>
+        <div class="title">ALERTA RECARGAS</div>
+        <div class="subtitle">Control operativo de inicio y fin de recargas</div>
+      </div>
 
       <div class="mt-20">
         <label for="codigoInput">Código de acceso</label>
@@ -589,10 +628,13 @@
 
     <div id="appView" class="hidden">
       <div class="header">
-        <div>
-          <div class="kicker">Control operativo</div>
-          <div class="title">ALERTA RECARGAS</div>
-          <div class="subtitle" id="subtituloApp">Vista operativa</div>
+        <div class="brand">
+          <img class="brand-logo" src="logo.png" alt="Logo">
+          <div class="brand-text">
+            <div class="kicker">Control operativo</div>
+            <div class="title">ALERTA RECARGAS</div>
+            <div class="subtitle" id="subtituloApp">Vista operativa</div>
+          </div>
         </div>
 
         <div class="user-box">
