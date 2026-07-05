@@ -405,6 +405,82 @@
       display: none !important;
     }
 
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.62);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+      animation: fadeIn .15s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 380px;
+      background: linear-gradient(180deg, rgba(24, 24, 24, 0.98), rgba(7, 7, 7, 0.98));
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 26px 24px 22px;
+      box-shadow: var(--shadow);
+      text-align: center;
+      animation: modalPop .18s ease;
+    }
+
+    @keyframes modalPop {
+      from { transform: scale(.94); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-icon {
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 14px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      background: rgba(245, 197, 66, 0.12);
+      border: 1px solid rgba(245, 197, 66, 0.3);
+    }
+
+    .modal-card.modal-danger .modal-icon {
+      background: rgba(239, 68, 68, 0.14);
+      border-color: rgba(239, 68, 68, 0.35);
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 900;
+      margin-bottom: 8px;
+      color: var(--white);
+    }
+
+    .modal-message {
+      color: var(--muted);
+      font-size: 13.5px;
+      line-height: 1.5;
+      margin-bottom: 22px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .modal-actions .btn {
+      flex: 1;
+      width: auto;
+    }
+
     .user-box {
       position: relative;
       z-index: 1;
@@ -729,6 +805,18 @@
     </div>
   </div>
 
+  <div id="confirmModal" class="modal-overlay hidden">
+    <div id="confirmCard" class="modal-card">
+      <div class="modal-icon" id="confirmIcon">⚡</div>
+      <div class="modal-title" id="confirmTitle">Confirmar</div>
+      <div class="modal-message" id="confirmMessage"></div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" id="confirmBtnCancelar">Cancelar</button>
+        <button class="btn" id="confirmBtnAceptar">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
 <script>
   // URL del despliegue /exec de Apps Script (Implementar > Gestionar
   // implementaciones). Si se crea una NUEVA implementación (no una nueva
@@ -756,6 +844,47 @@
         throw new Error('No se pudo contactar al servidor (HTTP ' + r.status + ').');
       }
       return r.json();
+    });
+  }
+
+  /**
+   * Modal de confirmación propio, con el estilo de la app, en vez del
+   * confirm() nativo del navegador. Devuelve una Promise<boolean>: true si
+   * el usuario confirma, false si cancela o cierra.
+   */
+  function mostrarConfirmacion(opciones) {
+    return new Promise(function(resolve) {
+      const overlay = document.getElementById('confirmModal');
+      const card = document.getElementById('confirmCard');
+      const btnAceptar = document.getElementById('confirmBtnAceptar');
+      const btnCancelar = document.getElementById('confirmBtnCancelar');
+
+      document.getElementById('confirmIcon').textContent = opciones.icono || '⚡';
+      document.getElementById('confirmTitle').textContent = opciones.titulo || 'Confirmar';
+      document.getElementById('confirmMessage').textContent = opciones.mensaje || '';
+
+      btnAceptar.textContent = opciones.textoConfirmar || 'Confirmar';
+      btnAceptar.className = 'btn ' + (opciones.claseBoton || '');
+
+      card.classList.toggle('modal-danger', opciones.claseBoton === 'btn-danger');
+
+      overlay.classList.remove('hidden');
+
+      function cerrar(resultado) {
+        overlay.classList.add('hidden');
+        btnAceptar.removeEventListener('click', onAceptar);
+        btnCancelar.removeEventListener('click', onCancelar);
+        overlay.removeEventListener('click', onOverlayClick);
+        resolve(resultado);
+      }
+
+      function onAceptar() { cerrar(true); }
+      function onCancelar() { cerrar(false); }
+      function onOverlayClick(e) { if (e.target === overlay) cerrar(false); }
+
+      btnAceptar.addEventListener('click', onAceptar);
+      btnCancelar.addEventListener('click', onCancelar);
+      overlay.addEventListener('click', onOverlayClick);
     });
   }
 
@@ -996,8 +1125,16 @@
     });
   }
 
-  function iniciar() {
-    if (!confirm('¿Confirmas iniciar recarga para la placa ' + sesion.placa + '?')) return;
+  async function iniciar() {
+    const confirmado = await mostrarConfirmacion({
+      icono: '⚡',
+      titulo: 'Iniciar recarga',
+      mensaje: '¿Confirmas iniciar la recarga para la placa ' + sesion.placa + '?',
+      textoConfirmar: 'Sí, iniciar',
+      claseBoton: 'btn-success'
+    });
+
+    if (!confirmado) return;
 
     setLoading(true);
     clearMessage('appMsg');
@@ -1024,8 +1161,16 @@
       });
   }
 
-  function finalizar(recargaId) {
-    if (!confirm('¿Confirmas finalizar la recarga seleccionada?')) return;
+  async function finalizar(recargaId) {
+    const confirmado = await mostrarConfirmacion({
+      icono: '🏁',
+      titulo: 'Finalizar recarga',
+      mensaje: '¿Confirmas finalizar la recarga seleccionada?',
+      textoConfirmar: 'Sí, finalizar',
+      claseBoton: 'btn-danger'
+    });
+
+    if (!confirmado) return;
 
     setLoading(true);
     clearMessage('appMsg');
