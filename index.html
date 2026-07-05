@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ALERTA RECARGAS</title>
+
+  <style>
+    :root {
+      --black-1000: #030303;
+      --black-950: #070707;
+      --black-900: #0d0d0d;
+      --black-850: #151515;
+      --black-800: #1c1c1c;
+
+      --gold: #f5c542;
+      --gold-soft: #ffe28a;
+      --gold-dim: rgba(245, 197, 66, 0.55);
+
+      --white: #ffffff;
+      --steel-soft: rgba(244, 246, 248, 0.72);
+
+      --line: rgba(245, 197, 66, 0.20);
+      --shadow: 0 18px 46px rgba(0, 0, 0, 0.46);
+
+      --text: var(--white);
+      --muted: var(--steel-soft);
+      --border: var(--line);
+
+      --success: #22c55e;
+      --success-soft: #86efac;
+      --danger: #ef4444;
+      --danger-soft: #fecaca;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+      background:
+        radial-gradient(900px 500px at 10% -8%, rgba(245, 197, 66, 0.14), transparent 58%),
+        radial-gradient(720px 420px at 96% 4%, rgba(255, 255, 255, 0.05), transparent 55%),
+        linear-gradient(135deg, var(--black-1000) 0%, var(--black-950) 45%, var(--black-850) 100%);
+      background-attachment: fixed;
+    }
+
+    .container {
+      width: min(1180px, 94vw);
+      margin: 0 auto;
+      padding: 24px 0 40px;
+    }
+
+    .kicker {
+      font-size: 10px;
+      letter-spacing: 1.6px;
+      font-weight: 900;
+      color: var(--gold-soft);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .header {
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 18px;
+      padding: 18px 22px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(21, 21, 21, 0.96), rgba(5, 5, 5, 0.92));
+      box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      overflow: hidden;
+    }
+
+    .header::after {
+      content: "";
+      position: absolute;
+      left: 22px;
+      right: 22px;
+      bottom: 0;
+      height: 2px;
+      border-radius: 20px;
+      background: linear-gradient(90deg, transparent, var(--gold), var(--gold-soft), var(--gold), transparent);
+      opacity: .75;
+    }
+
+    .title {
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-top: 6px;
+      font-size: 14px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(21, 21, 21, 0.94), rgba(6, 6, 6, 0.90));
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      margin-bottom: 18px;
+    }
+
+    .login-card {
+      max-width: 460px;
+      margin: 80px auto 0;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 13px 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: var(--black-950);
+      color: var(--text);
+      outline: none;
+      font-size: 15px;
+      transition: border-color .15s ease;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--gold);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px;
+    }
+
+    .col-3 { grid-column: span 3; }
+    .col-4 { grid-column: span 4; }
+    .col-6 { grid-column: span 6; }
+    .col-8 { grid-column: span 8; }
+    .col-12 { grid-column: span 12; }
+
+    .btn {
+      border: 1px solid var(--gold-dim);
+      border-radius: 12px;
+      padding: 13px 16px;
+      font-weight: 800;
+      cursor: pointer;
+      font-size: 14px;
+      color: #241a00;
+      background: linear-gradient(135deg, var(--gold), var(--gold-soft));
+      box-shadow: 0 10px 24px rgba(245, 197, 66, 0.22);
+      transition: transform .12s ease, box-shadow .18s ease, opacity .2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 30px rgba(245, 197, 66, 0.32);
+    }
+
+    .btn:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #052e16;
+      border-color: rgba(34, 197, 94, 0.5);
+      box-shadow: 0 10px 22px rgba(34, 197, 94, 0.22);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: #ffffff;
+      border-color: rgba(239, 68, 68, 0.5);
+      box-shadow: 0 10px 22px rgba(239, 68, 68, 0.22);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02));
+      color: var(--text);
+      border-color: rgba(255, 255, 255, 0.12);
+      box-shadow: none;
+    }
+
+    .btn-secondary:hover {
+      border-color: rgba(245, 197, 66, 0.35);
+      background: linear-gradient(135deg, rgba(245, 197, 66, 0.10), rgba(255, 255, 255, 0.03));
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .stat {
+      background: linear-gradient(180deg, rgba(21, 21, 21, 0.92), rgba(8, 8, 8, 0.88));
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 900;
+    }
+
+    #statAbiertas { color: var(--gold-soft); }
+    #statCerradas { color: var(--success-soft); }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      border: 1px solid transparent;
+      white-space: nowrap;
+    }
+
+    .pill-open {
+      background: rgba(245, 197, 66, 0.16);
+      color: var(--gold-soft);
+      border-color: rgba(245, 197, 66, 0.36);
+    }
+
+    .pill-closed {
+      background: rgba(34, 197, 94, 0.16);
+      color: var(--success-soft);
+      border-color: rgba(34, 197, 94, 0.35);
+    }
+
+    .pill-anulada {
+      background: rgba(148, 163, 184, 0.16);
+      color: #cbd5e1;
+      border-color: rgba(148, 163, 184, 0.35);
+    }
+
+    .tiempo-normal { color: var(--text); }
+
+    .tiempo-alerta {
+      color: var(--gold-soft);
+      font-weight: 900;
+    }
+
+    .tiempo-critico {
+      color: #f87171;
+      font-weight: 900;
+    }
+
+    .row-critico td {
+      background: rgba(239, 68, 68, 0.08);
+    }
+
+    .row-alerta td {
+      background: rgba(245, 197, 66, 0.06);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+    }
+
+    .table-wrap::-webkit-scrollbar {
+      height: 8px;
+    }
+
+    .table-wrap::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .table-wrap::-webkit-scrollbar-thumb {
+      background: rgba(245, 197, 66, 0.28);
+      border-radius: 10px;
+    }
+
+    .table-wrap::-webkit-scrollbar-thumb:hover {
+      background: rgba(245, 197, 66, 0.5);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: linear-gradient(180deg, rgba(13, 13, 13, 0.9), rgba(5, 5, 5, 0.88));
+    }
+
+    @media (min-width: 641px) {
+      table {
+        min-width: 760px;
+      }
+    }
+
+    th, td {
+      padding: 12px 10px;
+      text-align: left;
+      border-bottom: 1px solid rgba(245, 197, 66, 0.10);
+      font-size: 13px;
+      vertical-align: middle;
+    }
+
+    th {
+      color: var(--gold-soft);
+      background: rgba(21, 21, 21, 0.9);
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      border-bottom: 1px solid var(--line);
+    }
+
+    tr:hover td {
+      background: rgba(245, 197, 66, 0.05);
+    }
+
+    .message {
+      margin: 12px 0;
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-weight: 700;
+      display: none;
+    }
+
+    .message.ok {
+      display: block;
+      background: rgba(34, 197, 94, 0.14);
+      color: var(--success-soft);
+      border: 1px solid rgba(34, 197, 94, 0.35);
+    }
+
+    .message.error {
+      display: block;
+      background: rgba(239, 68, 68, 0.14);
+      color: var(--danger-soft);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .user-box {
+      position: relative;
+      z-index: 1;
+      text-align: right;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border: 1px solid rgba(245, 197, 66, 0.25);
+      border-radius: 999px;
+      background: rgba(245, 197, 66, 0.08);
+      color: var(--gold-soft);
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+      margin-top: 6px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 0 4px rgba(245, 197, 66, 0.10), 0 0 12px rgba(245, 197, 66, 0.75);
+      animation: pulseGold 2.4s ease-in-out infinite;
+    }
+
+    @keyframes pulseGold {
+      0%, 100% { opacity: 1; }
+      50% { opacity: .5; }
+    }
+
+    .strong {
+      color: var(--text);
+      font-weight: 900;
+    }
+
+    .section-title {
+      font-size: 17px;
+      font-weight: 900;
+      margin-bottom: 12px;
+      color: var(--white);
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .mt-12 { margin-top: 12px; }
+    .mt-16 { margin-top: 16px; }
+    .mt-20 { margin-top: 20px; }
+
+    @media (max-width: 840px) {
+      .header {
+        flex-direction: column;
+      }
+
+      .user-box {
+        text-align: left;
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .col-3, .col-4, .col-6, .col-8 {
+        grid-column: span 12;
+      }
+
+      .title {
+        font-size: 24px;
+      }
+    }
+
+    /* ===== MÓVIL: la placa que inicia/finaliza recarga usa esto ===== */
+    @media (max-width: 640px) {
+      .container {
+        width: 100%;
+        padding: 14px 12px 28px;
+      }
+
+      .card {
+        padding: 14px;
+        border-radius: 16px;
+      }
+
+      .title {
+        font-size: 20px;
+      }
+
+      .subtitle {
+        font-size: 12.5px;
+      }
+
+      input, select {
+        font-size: 16px;
+      }
+
+      .btn {
+        min-height: 50px;
+        font-size: 15px;
+        width: 100%;
+      }
+
+      #actionArea .btn {
+        font-size: 16px;
+      }
+
+      .user-box .actions .btn {
+        width: auto;
+        min-height: 42px;
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+      }
+
+      .stat {
+        padding: 10px;
+      }
+
+      .stat-value {
+        font-size: 19px;
+      }
+
+      .table-wrap {
+        overflow-x: visible;
+        border: none;
+        border-radius: 0;
+      }
+
+      table, thead, tbody, tr, td {
+        display: block;
+        width: 100%;
+      }
+
+      thead {
+        display: none;
+      }
+
+      tbody tr {
+        margin-bottom: 10px;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: linear-gradient(180deg, rgba(21, 21, 21, 0.92), rgba(8, 8, 8, 0.88));
+      }
+
+      tr:hover td {
+        background: transparent;
+      }
+
+      td {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 7px 2px;
+        border-bottom: 1px solid rgba(245, 197, 66, 0.08);
+        font-size: 14px;
+      }
+
+      td:last-child {
+        border-bottom: none;
+      }
+
+      td::before {
+        content: attr(data-label);
+        font-size: 10.5px;
+        font-weight: 900;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+        color: var(--gold-soft);
+        flex-shrink: 0;
+      }
+
+      td[data-label="Acción"] {
+        justify-content: flex-end;
+      }
+
+      td[data-label="Acción"]::before {
+        display: none;
+      }
+
+      td[data-label="Acción"] .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div id="loginView" class="card login-card">
+      <div class="kicker">Control operativo</div>
+      <div class="title">ALERTA RECARGAS</div>
+      <div class="subtitle">Control operativo de inicio y fin de recargas</div>
+
+      <div class="mt-20">
+        <label for="codigoInput">Código de acceso</label>
+        <input id="codigoInput" type="password" placeholder="Ingrese su código de acceso" onkeydown="enterLogin(event)">
+      </div>
+
+      <div class="mt-16 actions">
+        <button class="btn" onclick="login()">Ingresar</button>
+      </div>
+
+      <div id="loginMsg" class="message"></div>
+    </div>
+
+    <div id="appView" class="hidden">
+      <div class="header">
+        <div>
+          <div class="kicker">Control operativo</div>
+          <div class="title">ALERTA RECARGAS</div>
+          <div class="subtitle" id="subtituloApp">Vista operativa</div>
+        </div>
+
+        <div class="user-box">
+          <div><span class="strong" id="userName"></span></div>
+          <div id="userMeta"></div>
+          <div class="status">
+            <span class="status-dot"></span>
+            <span id="statusText">Sesión activa</span>
+          </div>
+          <div class="mt-12 actions" style="justify-content:flex-end;">
+            <button class="btn btn-secondary" onclick="refrescar()">Actualizar</button>
+            <button class="btn btn-secondary" onclick="cerrarSesion()">Salir</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="appMsg" class="message"></div>
+
+      <div class="card">
+        <div class="row">
+          <div id="selectorAgenciaBox" class="col-4 hidden">
+            <label for="agenciaSelect">Agencia</label>
+            <select id="agenciaSelect" onchange="refrescar()"></select>
+          </div>
+
+          <div class="col-8">
+            <div class="section-title">Control de recarga</div>
+            <div id="actionArea" class="actions"></div>
+            <div id="actionHint" class="muted mt-12"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-label">Total recargas</div>
+          <div class="stat-value" id="statTotal">0</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Recargas abiertas</div>
+          <div class="stat-value" id="statAbiertas">0</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Recargas cerradas</div>
+          <div class="stat-value" id="statCerradas">0</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Promedio duración</div>
+          <div class="stat-value" id="statPromedio">0 min</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Mayor tiempo abierto</div>
+          <div class="stat-value" id="statMayorAbierto">0 min</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">Historial de recargas</div>
+        <div class="muted" id="rangoVista"></div>
+
+        <div class="table-wrap mt-16">
+          <table>
+            <thead>
+              <tr>
+                <th>Placa</th>
+                <th>Agencia</th>
+                <th>Estado</th>
+                <th>Inicio recarga</th>
+                <th>Fin recarga</th>
+                <th>Tiempo</th>
+                <th>N° recarga día</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody id="tablaBody">
+              <tr>
+                <td colspan="8">Sin datos.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // URL del despliegue /exec de Apps Script (Implementar > Gestionar
+  // implementaciones). Si se crea una NUEVA implementación (no una nueva
+  // versión de la misma), esta URL cambia y hay que actualizarla aquí.
+  const API_URL = 'https://script.google.com/macros/s/AKfycby6hpttrWvvQlLbaidin8bQABomjbx3bU1NS2BkGuKy-1YYhRtycc8TG5GtOmUb5TPq/exec';
+
+  let codigoSesion = '';
+  let sesion = null;
+  let vistaActual = null;
+
+  /**
+   * Llama al backend de Apps Script como API JSON en vez de usar
+   * google.script.run (que solo existe dentro de una página servida por
+   * el propio Apps Script). Se manda como POST con Content-Type
+   * "text/plain" a propósito: así el navegador NO dispara una petición
+   * preflight OPTIONS, que Apps Script no sabe responder.
+   */
+  function llamarApi(action, params) {
+    return fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: action, params: params || {} })
+    }).then(function(r) {
+      if (!r.ok) {
+        throw new Error('No se pudo contactar al servidor (HTTP ' + r.status + ').');
+      }
+      return r.json();
+    });
+  }
+
+  function enterLogin(event) {
+    if (event.key === 'Enter') login();
+  }
+
+  function setLoading(isLoading) {
+    const buttons = document.querySelectorAll('button');
+    buttons.forEach(btn => btn.disabled = isLoading);
+  }
+
+  function showMessage(targetId, type, text) {
+    const el = document.getElementById(targetId);
+    el.className = 'message ' + (type || '');
+    el.textContent = text || '';
+  }
+
+  function clearMessage(targetId) {
+    const el = document.getElementById(targetId);
+    el.className = 'message';
+    el.textContent = '';
+  }
+
+  function login() {
+    const codigo = document.getElementById('codigoInput').value.trim();
+    if (!codigo) {
+      showMessage('loginMsg', 'error', 'Ingrese un código de acceso.');
+      return;
+    }
+
+    setLoading(true);
+    clearMessage('loginMsg');
+
+    llamarApi('validarCodigo', { codigoAcceso: codigo })
+      .then(function(resp) {
+        setLoading(false);
+
+        if (!resp || !resp.ok) {
+          showMessage('loginMsg', 'error', resp ? resp.mensaje : 'No se pudo validar el acceso.');
+          return;
+        }
+
+        codigoSesion = codigo;
+        sesion = resp.sesion;
+
+        document.getElementById('loginView').classList.add('hidden');
+        document.getElementById('appView').classList.remove('hidden');
+
+        prepararSelectorAgencias(resp.agencias || []);
+        refrescar();
+      })
+      .catch(function(err) {
+        setLoading(false);
+        showMessage('loginMsg', 'error', err.message || String(err));
+      });
+  }
+
+  function pintarCabecera(resp) {
+    document.getElementById('userName').textContent = sesion.nombre_usuario || sesion.placa || sesion.usuario_id;
+
+    const selectorBox = document.getElementById('selectorAgenciaBox');
+    const statusText = document.getElementById('statusText');
+
+    if (sesion.rol === 'SISTEMA') {
+      document.getElementById('userMeta').textContent = 'Rol: SISTEMA (visualiza todas las agencias)';
+      document.getElementById('subtituloApp').textContent = 'Vista sistema por agencia';
+      statusText.textContent = 'Sistema · ' + (resp.agenciaSeleccionadaNombre || '');
+      selectorBox.classList.toggle('hidden', !resp.mostrarSelectorAgencia);
+    } else if (sesion.rol === 'SUPERVISOR_AGENCIA') {
+      document.getElementById('userMeta').textContent = 'Rol: SUPERVISOR | Agencia: ' + (resp.agenciaSeleccionadaNombre || sesion.agencia);
+      document.getElementById('subtituloApp').textContent = 'Vista supervisor de agencia';
+      statusText.textContent = 'Supervisor · ' + (resp.agenciaSeleccionadaNombre || sesion.agencia);
+      selectorBox.classList.add('hidden');
+    } else {
+      document.getElementById('userMeta').textContent = 'Placa: ' + sesion.placa + ' | Agencia: ' + sesion.agencia;
+      document.getElementById('subtituloApp').textContent = 'Vista placa';
+      statusText.textContent = 'Placa ' + sesion.placa;
+      selectorBox.classList.add('hidden');
+    }
+  }
+
+  function prepararSelectorAgencias(agencias) {
+    const select = document.getElementById('agenciaSelect');
+    select.innerHTML = '';
+
+    agencias.forEach(a => {
+      const option = document.createElement('option');
+      option.value = a.agencia_id;
+      option.textContent = a.agencia;
+      select.appendChild(option);
+    });
+  }
+
+  function refrescar() {
+    if (!codigoSesion) return;
+
+    const agenciaId = sesion && sesion.rol === 'SISTEMA'
+      ? document.getElementById('agenciaSelect').value
+      : '';
+
+    setLoading(true);
+    clearMessage('appMsg');
+
+    llamarApi('refrescarVista', { codigoAcceso: codigoSesion, agenciaSeleccionadaId: agenciaId })
+      .then(function(resp) {
+        setLoading(false);
+
+        if (!resp || !resp.ok) {
+          showMessage('appMsg', 'error', resp ? resp.mensaje : 'No se pudo cargar la vista.');
+          return;
+        }
+
+        aplicarVista(resp);
+      })
+      .catch(function(err) {
+        setLoading(false);
+        showMessage('appMsg', 'error', err.message || String(err));
+      });
+  }
+
+  // Pinta la vista recibida (de refrescar(), o embebida en la respuesta de
+  // iniciarRecarga/finalizarRecarga) sin necesidad de otra llamada al
+  // servidor: así iniciar/finalizar quedan en un solo viaje de red.
+  function aplicarVista(resp) {
+    vistaActual = resp;
+
+    if (sesion.rol === 'SISTEMA' && resp.agenciaSeleccionadaId) {
+      document.getElementById('agenciaSelect').value = resp.agenciaSeleccionadaId;
+    }
+
+    pintarCabecera(resp);
+    pintarVista(resp);
+  }
+
+  function pintarVista(resp) {
+    const i = resp.indicadores || {};
+
+    document.getElementById('statTotal').textContent = i.total || 0;
+    document.getElementById('statAbiertas').textContent = i.abiertas || 0;
+    document.getElementById('statCerradas').textContent = i.cerradas || 0;
+    document.getElementById('statPromedio').textContent = i.promedio_duracion_texto || '0 min';
+    document.getElementById('statMayorAbierto').textContent = i.mayor_tiempo_abierto_texto || '0 min';
+
+    document.getElementById('rangoVista').textContent =
+      'Mostrando últimos ' + resp.diasVista + ' día(s). Actualizado: ' + resp.ahora;
+
+    pintarAcciones(resp);
+    pintarTabla(resp.registros || []);
+  }
+
+  function pintarAcciones(resp) {
+    const area = document.getElementById('actionArea');
+    const hint = document.getElementById('actionHint');
+    area.innerHTML = '';
+    hint.textContent = '';
+
+    if (!resp.puedeOperar) {
+      if (sesion.rol === 'SISTEMA') {
+        hint.textContent = 'El usuario sistema visualiza la operación de la agencia seleccionada. En esta versión no inicia ni finaliza recargas.';
+      } else if (sesion.rol === 'SUPERVISOR_AGENCIA') {
+        hint.textContent = 'El supervisor visualiza la operación de su agencia. En esta versión no inicia ni finaliza recargas.';
+      }
+      return;
+    }
+
+    const abierta = resp.recargaAbiertaActual;
+
+    if (abierta) {
+      const btn = document.createElement('button');
+      btn.className = 'btn btn-danger';
+      btn.textContent = 'Finalizar recarga';
+      btn.onclick = function() {
+        finalizar(abierta.recarga_id);
+      };
+
+      area.appendChild(btn);
+      hint.textContent = 'Recarga abierta desde: ' + abierta.inicio_recarga + ' | Tiempo abierto: ' + abierta.duracion_texto;
+    } else {
+      const btn = document.createElement('button');
+      btn.className = 'btn btn-success';
+      btn.textContent = 'Iniciar recarga';
+      btn.onclick = iniciar;
+
+      area.appendChild(btn);
+      hint.textContent = 'No tienes recargas abiertas. Puedes iniciar una nueva recarga.';
+    }
+  }
+
+  function pintarTabla(registros) {
+    const tbody = document.getElementById('tablaBody');
+    tbody.innerHTML = '';
+
+    if (!registros.length) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = '<td colspan="8">Sin registros para mostrar.</td>';
+      tbody.appendChild(tr);
+      return;
+    }
+
+    registros.forEach(r => {
+      const tr = document.createElement('tr');
+
+      let estadoClass = 'pill-closed';
+      if (r.estado === 'ABIERTA') estadoClass = 'pill-open';
+      else if (r.estado === 'ANULADA') estadoClass = 'pill-anulada';
+
+      const estadoHtml = '<span class="pill ' + estadoClass + '">' + escapeHtml(r.estado) + '</span>';
+
+      let tiempoClass = 'tiempo-normal';
+      if (r.estado === 'ABIERTA') {
+        if (r.nivel_alerta === 'critico') {
+          tiempoClass = 'tiempo-critico';
+          tr.classList.add('row-critico');
+        } else if (r.nivel_alerta === 'alerta') {
+          tiempoClass = 'tiempo-alerta';
+          tr.classList.add('row-alerta');
+        }
+      }
+
+      let accionHtml = '-';
+
+      if (r.estado === 'ABIERTA' && r.puede_cerrar) {
+        accionHtml = '<button class="btn btn-danger" onclick="finalizar(\'' + escapeHtml(r.recarga_id) + '\')">Finalizar</button>';
+      }
+
+      tr.innerHTML =
+        '<td data-label="Placa"><b>' + escapeHtml(r.placa || '') + '</b></td>' +
+        '<td data-label="Agencia">' + escapeHtml(r.agencia || '') + '</td>' +
+        '<td data-label="Estado">' + estadoHtml + '</td>' +
+        '<td data-label="Inicio recarga">' + escapeHtml(r.inicio_recarga || '') + '</td>' +
+        '<td data-label="Fin recarga">' + escapeHtml(r.fin_recarga || '') + '</td>' +
+        '<td data-label="Tiempo" class="' + tiempoClass + '">' + escapeHtml(r.duracion_texto || '') + '</td>' +
+        '<td data-label="N° recarga día">' + escapeHtml(String(r.nro_recarga_dia || '')) + '</td>' +
+        '<td data-label="Acción">' + accionHtml + '</td>';
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  function iniciar() {
+    if (!confirm('¿Confirmas iniciar recarga para la placa ' + sesion.placa + '?')) return;
+
+    setLoading(true);
+    clearMessage('appMsg');
+
+    llamarApi('iniciarRecarga', { codigoAcceso: codigoSesion })
+      .then(function(resp) {
+        setLoading(false);
+
+        if (!resp || !resp.ok) {
+          showMessage('appMsg', 'error', resp ? resp.mensaje : 'No se pudo iniciar la recarga.');
+          return;
+        }
+
+        if (resp.vista) {
+          aplicarVista(resp.vista);
+          showMessage('appMsg', 'ok', resp.mensaje || 'Recarga iniciada correctamente.');
+        } else {
+          refrescar();
+        }
+      })
+      .catch(function(err) {
+        setLoading(false);
+        showMessage('appMsg', 'error', err.message || String(err));
+      });
+  }
+
+  function finalizar(recargaId) {
+    if (!confirm('¿Confirmas finalizar la recarga seleccionada?')) return;
+
+    setLoading(true);
+    clearMessage('appMsg');
+
+    llamarApi('finalizarRecarga', { codigoAcceso: codigoSesion, recargaId: recargaId })
+      .then(function(resp) {
+        setLoading(false);
+
+        if (!resp || !resp.ok) {
+          showMessage('appMsg', 'error', resp ? resp.mensaje : 'No se pudo finalizar la recarga.');
+          return;
+        }
+
+        if (resp.vista) {
+          aplicarVista(resp.vista);
+          showMessage('appMsg', 'ok', resp.mensaje || 'Recarga finalizada correctamente.');
+        } else {
+          refrescar();
+        }
+      })
+      .catch(function(err) {
+        setLoading(false);
+        showMessage('appMsg', 'error', err.message || String(err));
+      });
+  }
+
+  function cerrarSesion() {
+    codigoSesion = '';
+    sesion = null;
+    vistaActual = null;
+    document.getElementById('codigoInput').value = '';
+    document.getElementById('appView').classList.add('hidden');
+    document.getElementById('loginView').classList.remove('hidden');
+    clearMessage('loginMsg');
+    clearMessage('appMsg');
+  }
+
+  function escapeHtml(value) {
+    return String(value || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+</script>
+</body>
+</html>
